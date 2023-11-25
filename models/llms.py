@@ -3,6 +3,7 @@ from models.gpt import gpt_completion_fn, gpt_nll_fn
 from models.gpt import tokenize_fn as gpt_tokenize_fn
 from models.llama import llama_completion_fn, llama_nll_fn
 from models.llama import tokenize_fn as llama_tokenize_fn
+from models.gpt4all import gpt4all_completion_fn
 
 # Required: Text completion function for each model
 # -----------------------------------------------
@@ -28,6 +29,7 @@ completion_fns = {
     'llama-7b-chat': partial(llama_completion_fn, model='7b-chat'),
     'llama-13b-chat': partial(llama_completion_fn, model='13b-chat'),
     'llama-70b-chat': partial(llama_completion_fn, model='70b-chat'),
+    'orca-mini-3b-gguf2-q4_0.gguf': partial(gpt4all_completion_fn, model='orca-mini-3b-gguf2-q4_0.gguf'),
 }
 
 # Optional: NLL/D functions for each model

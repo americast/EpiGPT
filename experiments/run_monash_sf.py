@@ -30,7 +30,8 @@ model_hypers = {
     'text-davinci-003': {'model': 'text-davinci-003', **gpt3_hypers},
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
     'llama-70b': {'model': 'llama-70b', **llama_hypers},
-    'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers}
+    'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers},
+    'sf': {'model': "AutoARIMA", **llama_hypers}
 }
 
 # Specify the function to get predictions for each model
@@ -52,7 +53,8 @@ models_to_run = [
     # 'text-davinci-003',
     # 'llama-7b',
     # 'llama-70b',
-    'gpt4all'
+    # 'gpt4all',
+    'sf'
 ]
 datasets_to_run =  [
     # "weather",
@@ -65,8 +67,8 @@ datasets_to_run =  [
     # "tourism_yearly",
     # "tourism_quarterly",
     # "us_births",
-    "covid_deaths",
-    # "hospital",
+    # "covid_deaths",
+    "hospital",
     # "nn5_weekly",
     # "traffic_weekly",
     # "saugeenday",
@@ -102,8 +104,22 @@ for dsname in datasets_to_run:
         num_samples = 5
         
         try:
-            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
+            import pudb; pu.db
+            if model == "sf":
+                from statsforecast import StatsForecast
+                from statsforecast.models import AutoARIMA
+                import pandas as pd
+
+                sf = StatsForecast(
+                    models = [AutoARIMA(season_length = 12)],
+                    freq = 'M'
+                )
+                sf.fit(pd.DataFrame(q_list, columns=['q_data']))
+                k = sf.predict(h=12, level=[95])
+            else:
+                preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             medians = preds['median']
+            preds['targets'] = test
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
             preds['maes'] = maes
