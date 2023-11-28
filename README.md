@@ -21,6 +21,10 @@ Please adjust the `disease` variable in `outputs/monash/plot.py` before running 
 `cd outputs/monash`  
 `python plot.py`
 
+## Example plot
+
+![image](outputs/monash/cdc_flu.png)
+
 
 # Large Language Models Are Zero Shot Time Series Forecasters
 
