@@ -1,3 +1,27 @@
+# EpiGPT
+
+## Requirements
+
+`gpt4all`
+
+## Running the code
+
+Please adjust the `models_to_run` and `dataset_to_run` variables in `experiments/run_monash.py` before executing the code below. The plotting code is designed in a way that it can only take a list of single element for these two variables, so it is recommended to run the following code for just one model and dataset at a time, as of now.
+
+```bash
+CUDA_VISIBLE_DEVICES="<GPU num>" OPENAI_API_KEY="abc" python -m experiments.run_monash
+```
+
+Note that `gpt4all` does not need an `OPENAI_API_KEY`, hence any value can be set.
+
+## Plotting
+
+Please adjust the `disease` variable in `outputs/monash/plot.py` before running the code below.  
+
+`cd outputs/monash`  
+`python plot.py`
+
+
 # Large Language Models Are Zero Shot Time Series Forecasters
 
 This repository contains the code for the paper
