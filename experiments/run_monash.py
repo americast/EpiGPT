@@ -50,9 +50,9 @@ os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
     # 'text-davinci-003',
-    # 'llama-7b',
+    'llama-7b',
     # 'llama-70b',
-    'gpt4all'
+    # 'gpt4all'
 ]
 datasets_to_run =  [
     # "weather",
@@ -65,7 +65,7 @@ datasets_to_run =  [
     # "tourism_yearly",
     # "tourism_quarterly",
     # "us_births",
-    "covid_deaths",
+    # "covid_deaths",
     # "hospital",
     # "nn5_weekly",
     # "traffic_weekly",
@@ -73,7 +73,9 @@ datasets_to_run =  [
     # "cif_2016",
     # "bitcoin",
     # "sunspot",
-    # "nn5_daily"
+    # "nn5_daily",
+    "cdc_flu",
+    # "cdc_covid"
 ]
 
 max_history_len = 30
@@ -104,6 +106,8 @@ for dsname in datasets_to_run:
         try:
             preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             medians = preds['median']
+            preds['train'] = train
+            preds['test'] = test
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
             preds['maes'] = maes
