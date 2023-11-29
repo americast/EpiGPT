@@ -10,7 +10,18 @@ import openai
 from statsforecast import StatsForecast
 from statsforecast.models import AutoARIMA
 import pandas as pd
-openai.api_key = os.environ['OPENAI_API_KEY']
+openai.api_key = "abc"
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('model', type=str, options=['llama-7b', 'gpt4all', 'arima'], default='llama-7b',
+                    help='model to run')
+parser.add_argument('dataset', type=str, options=["covid_deaths", "hospital","cdc_flu", "cdc_covid", "symp"], default='cdc_flu',
+                    help='dataset to use')
+
+args = parser.parse_args()
+
 
 # Specify the hyperparameter grid for each model
 gpt3_hypers = dict(
@@ -57,7 +68,8 @@ models_to_run = [
     # 'llama-7b',
     # 'llama-70b',
     # 'gpt4all'
-    'arima'
+    # 'arima',
+    args.model
 ]
 datasets_to_run =  [
     # "weather",
@@ -81,7 +93,8 @@ datasets_to_run =  [
     # "nn5_daily",
     # "cdc_flu",
     # "cdc_covid",
-    "symp"
+    # "symp",
+    args.dataset
 ]
 
 max_history_len = 30
