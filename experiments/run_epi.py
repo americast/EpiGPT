@@ -7,6 +7,9 @@ from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
 import openai
+from statsforecast import StatsForecast
+from statsforecast.models import AutoARIMA
+import pandas as pd
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 # Specify the hyperparameter grid for each model
@@ -31,7 +34,7 @@ model_hypers = {
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
     'llama-70b': {'model': 'llama-70b', **llama_hypers},
     'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers},
-    'sf': {'model': "AutoARIMA", **llama_hypers}
+    'arima': {'model': "statsforecast", **llama_hypers}
 }
 
 # Specify the function to get predictions for each model
@@ -53,8 +56,8 @@ models_to_run = [
     # 'text-davinci-003',
     # 'llama-7b',
     # 'llama-70b',
-    # 'gpt4all',
-    'sf'
+    # 'gpt4all'
+    'arima'
 ]
 datasets_to_run =  [
     # "weather",
@@ -68,14 +71,17 @@ datasets_to_run =  [
     # "tourism_quarterly",
     # "us_births",
     # "covid_deaths",
-    "hospital",
+    # "hospital",
     # "nn5_weekly",
     # "traffic_weekly",
     # "saugeenday",
     # "cif_2016",
     # "bitcoin",
     # "sunspot",
-    # "nn5_daily"
+    # "nn5_daily",
+    # "cdc_flu",
+    # "cdc_covid",
+    "symp"
 ]
 
 max_history_len = 30
@@ -85,8 +91,8 @@ for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
     train, test = data
-    train = [x[-max_history_len:] for x in train][:10]
-    test = [x[:max_pred_len] for x in test][:10]
+    train = [x[-max_history_len:] for x in train][-10:]
+    test = [x[:max_pred_len] for x in test][-10:]
     if os.path.exists(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl'):
         with open(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl','rb') as f:
             out_dict = pickle.load(f)
@@ -104,22 +110,25 @@ for dsname in datasets_to_run:
         num_samples = 5
         
         try:
-            import pudb; pu.db
-            if model == "sf":
-                from statsforecast import StatsForecast
-                from statsforecast.models import AutoARIMA
-                import pandas as pd
+            if model == 'arima':
+                preds = {"median": [], "lower": [], "upper": []}
+                for t in train:
+                    df = pd.DataFrame({"unique_id": [1]*len(t), "y":t, "ds": list(range(1, len(t) +1))})
+                    sf = StatsForecast(
+                    models = [AutoARIMA(season_length = len(train[0]))],
+                        freq = 'M'
+                    )
 
-                sf = StatsForecast(
-                    models = [AutoARIMA(season_length = 12)],
-                    freq = 'M'
-                )
-                sf.fit(pd.DataFrame(q_list, columns=['q_data']))
-                k = sf.predict(h=12, level=[95])
+                    sf.fit(df)
+                    out = sf.predict(h=len(test[0]), level=[95])
+                    preds['median'].append(list(out['AutoARIMA']))
+                    preds['lower'].append(list(out['AutoARIMA-lo-95']))
+                    preds['upper'].append(list(out['AutoARIMA-hi-95']))
             else:
                 preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             medians = preds['median']
-            preds['targets'] = test
+            preds['train'] = train
+            preds['test'] = test
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
             preds['maes'] = maes

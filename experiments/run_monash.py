@@ -7,9 +7,6 @@ from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
 import openai
-from statsforecast import StatsForecast
-from statsforecast.models import AutoARIMA
-import pandas as pd
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 # Specify the hyperparameter grid for each model
@@ -33,8 +30,6 @@ model_hypers = {
     'text-davinci-003': {'model': 'text-davinci-003', **gpt3_hypers},
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
     'llama-70b': {'model': 'llama-70b', **llama_hypers},
-    'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers},
-    'arima': {'model': "statsforecast", **llama_hypers}
 }
 
 # Specify the function to get predictions for each model
@@ -42,7 +37,6 @@ model_predict_fns = {
     'text-davinci-003': get_llmtime_predictions_data,
     'llama-7b': get_llmtime_predictions_data,
     'llama-70b': get_llmtime_predictions_data,
-    'gpt4all': get_llmtime_predictions_data
 }
 
 def is_gpt(model):
@@ -53,52 +47,29 @@ output_dir = 'outputs/monash'
 os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
-    # 'text-davinci-003',
+    'text-davinci-003',
     # 'llama-7b',
     # 'llama-70b',
-    # 'gpt4all'
-    'arima'
 ]
 datasets_to_run =  [
-    # "weather",
-    # "solar_weekly",
-    # "tourism_monthly",
-    # "australian_electricity_demand",
-    # "pedestrian_counts",
-    # "traffic_hourly",
-    # "fred_md",
-    # "tourism_yearly",
-    # "tourism_quarterly",
-    # "us_births",
-    # "covid_deaths",
-    # "hospital",
-    # "nn5_weekly",
-    # "traffic_weekly",
-    # "saugeenday",
-    # "cif_2016",
-    # "bitcoin",
-    # "sunspot",
-    # "nn5_daily",
-    # "cdc_flu",
-    # "cdc_covid",
-    "symp"
+    "weather", "covid_deaths", "solar_weekly", "tourism_monthly", "australian_electricity_demand", "pedestrian_counts",
+    "traffic_hourly", "hospital", "fred_md", "tourism_yearly", "tourism_quarterly", "us_births",
+    "nn5_weekly", "traffic_weekly", "saugeenday", "cif_2016", "bitcoin", "sunspot", "nn5_daily"
 ]
 
-max_history_len = 30
-max_pred_len = 10
+max_history_len = 500
 datasets = get_datasets()
 for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
     train, test = data
-    train = [x[-max_history_len:] for x in train][-10:]
-    test = [x[:max_pred_len] for x in test][-10:]
-    if os.path.exists(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl'):
-        with open(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl','rb') as f:
+    train = [x[-max_history_len:] for x in train]
+    if os.path.exists(f'{output_dir}/{dsname}.pkl'):
+        with open(f'{output_dir}/{dsname}.pkl','rb') as f:
             out_dict = pickle.load(f)
     else:
         out_dict = {}
-    # import pudb; pu.db
+    
     for model in models_to_run:
         if model in out_dict:
             print(f"Skipping {dsname} {model}")
@@ -110,36 +81,18 @@ for dsname in datasets_to_run:
         num_samples = 5
         
         try:
-            if model == 'arima':
-                preds = {"median": [], "lower": [], "upper": []}
-                for t in train:
-                    df = pd.DataFrame({"unique_id": [1]*len(t), "y":t, "ds": list(range(1, len(t) +1))})
-                    sf = StatsForecast(
-                    models = [AutoARIMA(season_length = len(train[0]))],
-                        freq = 'M'
-                    )
-
-                    sf.fit(df)
-                    out = sf.predict(h=len(test[0]), level=[95])
-                    preds['median'].append(list(out['AutoARIMA']))
-                    preds['lower'].append(list(out['AutoARIMA-lo-95']))
-                    preds['upper'].append(list(out['AutoARIMA-hi-95']))
-            else:
-                preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
+            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             medians = preds['median']
-            preds['train'] = train
-            preds['test'] = test
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
             preds['maes'] = maes
             preds['mae'] = np.mean(maes)
             out_dict[model] = preds
-            print(out_dict)
         except Exception as e:
             print(f"Failed {dsname} {model}")
             print(e)
             continue
-        with open(f'{output_dir}/{model}_{dsname}.pkl','wb') as f:
+        with open(f'{output_dir}/{dsname}.pkl','wb') as f:
             pickle.dump(out_dict,f)
     print(f"Finished {dsname}")
     
