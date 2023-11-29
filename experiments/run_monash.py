@@ -7,6 +7,9 @@ from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
 import openai
+from statsforecast import StatsForecast
+from statsforecast.models import AutoARIMA
+import pandas as pd
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 # Specify the hyperparameter grid for each model
@@ -30,7 +33,8 @@ model_hypers = {
     'text-davinci-003': {'model': 'text-davinci-003', **gpt3_hypers},
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
     'llama-70b': {'model': 'llama-70b', **llama_hypers},
-    'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers}
+    'gpt4all': {'model': "orca-mini-3b-gguf2-q4_0.gguf", **llama_hypers},
+    'arima': {'model': "statsforecast", **llama_hypers}
 }
 
 # Specify the function to get predictions for each model
@@ -52,7 +56,8 @@ models_to_run = [
     # 'text-davinci-003',
     # 'llama-7b',
     # 'llama-70b',
-    'gpt4all'
+    # 'gpt4all'
+    'arima'
 ]
 datasets_to_run =  [
     # "weather",
@@ -105,7 +110,22 @@ for dsname in datasets_to_run:
         num_samples = 5
         
         try:
-            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
+            if model == 'arima':
+                preds = {"median": [], "lower": [], "upper": []}
+                for t in train:
+                    df = pd.DataFrame({"unique_id": [1]*len(t), "y":t, "ds": list(range(1, len(t) +1))})
+                    sf = StatsForecast(
+                    models = [AutoARIMA(season_length = len(train[0]))],
+                        freq = 'M'
+                    )
+
+                    sf.fit(df)
+                    out = sf.predict(h=len(test[0]), level=[95])
+                    preds['median'].append(list(out['AutoARIMA']))
+                    preds['lower'].append(list(out['AutoARIMA-lo-95']))
+                    preds['upper'].append(list(out['AutoARIMA-hi-95']))
+            else:
+                preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             medians = preds['median']
             preds['train'] = train
             preds['test'] = test
