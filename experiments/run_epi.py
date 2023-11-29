@@ -15,10 +15,8 @@ openai.api_key = "abc"
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('model', type=str, options=['llama-7b', 'gpt4all', 'arima'], default='llama-7b',
-                    help='model to run')
-parser.add_argument('dataset', type=str, options=["covid_deaths", "hospital","cdc_flu", "cdc_covid", "symp"], default='cdc_flu',
-                    help='dataset to use')
+parser.add_argument('--model', type=str, choices=['llama-7b', 'gpt4all', 'arima'], default='llama-7b', required=False, help='model to run')
+parser.add_argument('--dataset', type=str, choices=["covid_deaths", "hospital","cdc_flu", "cdc_covid", "symp"], default='cdc_flu', required=False, help='dataset to use')
 
 args = parser.parse_args()
 
