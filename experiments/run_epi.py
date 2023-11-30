@@ -102,8 +102,12 @@ for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
     train, test = data
-    train = [x[-max_history_len:] for x in train][-10:]
-    test = [x[:max_pred_len] for x in test][-10:]
+    if "symp" in dsname:
+        train = [x[-max_history_len:] for x in train][-10:]
+        test = [x[:max_pred_len] for x in test][-10:]
+    else:
+        train = [x[-max_history_len:] for x in train][:10]
+        test = [x[:max_pred_len] for x in test][:10]
     if os.path.exists(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl'):
         with open(f'{output_dir}/{models_to_run[0]}_{dsname}.pkl','rb') as f:
             out_dict = pickle.load(f)

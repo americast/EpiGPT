@@ -47,6 +47,7 @@ def gpt4all_completion_fn(model, input_str, steps, settings, num_samples, temp):
     #     logit_bias = {id: 30 for id in get_allowed_ids(allowed_tokens, model)}
     # if model in ['gpt-3.5-turbo','gpt-4']:
     outputs = []
+    # import pudb; pu.db
     for i in range(num_samples):
         output = model.generate("You are a helpful assistant that performs time series predictions. The user will provide a sequence and you will predict the remaining sequence. The sequence is represented by decimal strings separated by commas. Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n "+input_str, max_tokens=max_tokens)
         outputs.append(output)

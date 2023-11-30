@@ -48,13 +48,29 @@ os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
     'text-davinci-003',
-    # 'llama-7b',
-    # 'llama-70b',
+    'llama-7b',
+    'llama-70b',
 ]
 datasets_to_run =  [
-    "weather", "covid_deaths", "solar_weekly", "tourism_monthly", "australian_electricity_demand", "pedestrian_counts",
-    "traffic_hourly", "hospital", "fred_md", "tourism_yearly", "tourism_quarterly", "us_births",
-    "nn5_weekly", "traffic_weekly", "saugeenday", "cif_2016", "bitcoin", "sunspot", "nn5_daily"
+    "weather",
+    "solar_weekly",
+    "tourism_monthly",
+    "australian_electricity_demand",
+    "pedestrian_counts",
+    "traffic_hourly",
+    "fred_md",
+    "tourism_yearly",
+    "tourism_quarterly",
+    "us_births",
+    "covid_deaths",
+    "hospital",
+    "nn5_weekly",
+    "traffic_weekly",
+    "saugeenday",
+    "cif_2016",
+    "bitcoin",
+    "sunspot",
+    "nn5_daily",
 ]
 
 max_history_len = 500
