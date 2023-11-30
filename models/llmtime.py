@@ -152,7 +152,7 @@ def generate_predictions(
     """
     
     completions_list = []
-    complete = lambda x: completion_fn(input_str=x, steps=steps*STEP_MULTIPLIER, settings=settings, num_samples=num_samples, temp=temp)
+    complete = lambda x: completion_fn(input_str=x, steps=steps*STEP_MULTIPLIER, settings=settings, num_samples=num_samples, temp=temp, explain = kwargs.get("explain", False))
     if parallel and len(input_strs) > 1:
         print('Running completions in parallel for each input')
         with ThreadPoolExecutor(min(max_concurrent, len(input_strs))) as p:

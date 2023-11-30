@@ -18,7 +18,7 @@ def tokenize_fn(str, model):
     encoding = tiktoken.encoding_for_model(model)
     return encoding.encode(str)
 
-def gpt4all_completion_fn(model, input_str, steps, settings, num_samples, temp):
+def gpt4all_completion_fn(model, input_str, steps, settings, num_samples, temp, explain=False):
     """
     Generate text completions from GPT4All.
 
@@ -47,9 +47,29 @@ def gpt4all_completion_fn(model, input_str, steps, settings, num_samples, temp):
     #     logit_bias = {id: 30 for id in get_allowed_ids(allowed_tokens, model)}
     # if model in ['gpt-3.5-turbo','gpt-4']:
     outputs = []
-    # import pudb; pu.db
+    dialog_start = "You are a helpful assistant that performs time series predictions. The user will provide a sequence and you will predict the remaining sequence."
+    dialog_mid = ""
+    dialog_end = " The sequence is represented by decimal strings separated by commas. Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n "
+    if explain is not False:
+        if "flu" in explain or "symp" in explain:
+            dialog_mid = " The user is trying to predict the number of flu cases in the US."
+            if "less" not in explain:
+                dialog_mid += " It usually rises every year in the winter and falls in the summer."
+        elif "covid" in explain:
+            if "lockdown" in explain:
+                dialog_mid += " The user is trying to predict the number of covid cases in the US if a lockdown was declared starting now."
+            else:
+                dialog_mid = " The user is trying to predict the number of covid cases in the US."
+                if "less" not in explain:
+                    dialog_mid += " It had three waves in the past year."
+        elif "hospital" in explain:
+            dialog_mid = " The user is trying to predict the number of patient counts from 2000 to 2006."
+            if "less" not in explain:
+                dialog_mid += " It does not have a seasonal variation."
+        
+    dialog = dialog_start + dialog_mid + dialog_end
     for i in range(num_samples):
-        output = model.generate("You are a helpful assistant that performs time series predictions. The user will provide a sequence and you will predict the remaining sequence. The sequence is represented by decimal strings separated by commas. Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n "+input_str, max_tokens=max_tokens)
+        output = model.generate(dialog+input_str, max_tokens=max_tokens)
         outputs.append(output)
 
 

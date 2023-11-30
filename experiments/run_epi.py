@@ -17,9 +17,11 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, choices=['llama-7b', 'gpt4all', 'arima'], default='llama-7b', required=False, help='model to run')
 parser.add_argument('--dataset', type=str, choices=["covid_deaths", "hospital","cdc_flu", "cdc_covid", "symp"], default='cdc_flu', required=False, help='dataset to use')
+parser.add_argument('--explain', type=bool, default=False, required=False, help='add explanation to the input')
+parser.add_argument('--explain_less', type=bool, default=False, required=False, help='add a lot of explanation to the input')
+parser.add_argument('--explain_lockdown', type=bool, default=False, required=False, help='how would the time series vary if a lockdown was declared')
 
 args = parser.parse_args()
-
 
 # Specify the hyperparameter grid for each model
 gpt3_hypers = dict(
@@ -58,7 +60,14 @@ def is_gpt(model):
     return any([x in model for x in ['ada', 'babbage', 'curie', 'davinci', 'text-davinci-003', 'gpt-4']])
 
 # Specify the output directory for saving results
-output_dir = 'outputs/monash'
+if args.explain:
+    output_dir = 'outputs/monash_explain'
+elif args.explain_less:
+    output_dir = 'outputs/monash_explain_less'
+elif args.explain_lockdown:
+    output_dir = 'outputs/monash_explain_lockdown'
+else:
+    output_dir = 'outputs/monash'
 os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
@@ -121,6 +130,14 @@ for dsname in datasets_to_run:
         else:
             print(f"Starting {dsname} {model}")
             hypers = list(grid_iter(model_hypers[model]))
+        if args.explain:
+            hypers[0]["explain"] = dsname
+        elif args.explain_less:
+            hypers[0]["explain"] = dsname + "_less"
+        elif args.explain_lockdown:
+            hypers[0]["explain"] = dsname + "_lockdown"
+        else:
+            hypers[0]["explain"] = False
         parallel = True if is_gpt(model) else False
         num_samples = 5
         
