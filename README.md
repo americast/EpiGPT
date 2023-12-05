@@ -22,7 +22,9 @@ Please adjust the `disease` variable in `outputs/monash/plot.py` before running 
 
 ![image](outputs/monash/cdc_flu.png)
 
-
+# Large Language Models Are Time2Text Translator
+## 🚀 Trying out Time2Text Translator 
+Try the three different difficulty levels of prompts in Epi2Text, and you can make any LLM summarize the 2023 ILINet data.
 # Large Language Models Are Zero Shot Time Series Forecasters
 
 This repository contains the code for the paper
