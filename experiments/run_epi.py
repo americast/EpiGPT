@@ -111,6 +111,8 @@ for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
     train, test = data
+    print("mean: "+str(np.mean(np.array([np.mean(x) for x in train]))))
+    print("deviation: "+str(np.std(np.array([np.mean(x) for x in train]))))
     if "symp" in dsname:
         train = [x[-max_history_len:] for x in train][-10:]
         test = [x[:max_pred_len] for x in test][-10:]
