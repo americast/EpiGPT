@@ -13,8 +13,8 @@
 
       This should be the same across all pages.
      -->
-    <link rel="icon" href="./assets/images/1311.png" />
-		<title>Unemployables Portfolio</title>
+    <link rel="icon" href="./assets/images/epigpt logo.png" />
+		<title>EpiGPT</title>
     <meta name="description" content="A portfolio template for the Unemployables community.">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -23,16 +23,38 @@
     <link rel="stylesheet" href="./css/utilities.css">
 
 		<script defer src="./js/script.js"></script>
+    <style>
+      table {
+        border: 1px solid black;
+      }
+    
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+      }
+
+      figure{
+          display: inline-block;
+      }
+
+      .img {
+        width:  100px;
+        height: 100px;
+        background-size: cover;
+    }
+
+    </style>
 	</head>
 	<body>
     <!-- NAVBAR -->
     <div class="navbar">
       <a class="nav-title-link" href="./index.html">
         <!-- TODO - Change the "Portfolio Title" to whatever you want displayed in the top left -->
-        <span class="nav-title">Portfolio Title</span>
+        <span class="nav-title">EpiGPT</span>
          <!-- TODO - Change the email after 'mailto:' to your email address for contact -->
-        <a class="button" href="mailto:whitevans.eth@gmail.com">
-          <span class="button-text">Contact Me</span>
+        <a class="button" href="mailto:sayan.sinha@cc.gatech.edu">
+          <span class="button-text">Contact Us</span>
         </a>
       </a>
     </div>
@@ -50,10 +72,10 @@
             - Change the number to point to your Unemployable & replace the OpenSea link with your own
             - If you aren't using an Unemployable as your image, remove the entire "a" element
           -->
-          <img src="./assets/images/1311.png" class="portfolio-header-image">
-          <a class="no-underline" target="_blank" href="https://opensea.io/assets/0xe0be388ab81c47b0f098d2030a1c9ef190691a8a/1311">
+          <img src="./assets/images/epigpt logo.png" class="portfolio-header-image">
+          <!-- <a class="no-underline" target="_blank" href="https://opensea.io/assets/0xe0be388ab81c47b0f098d2030a1c9ef190691a8a/1311">
             <span class="image-caption">Unemployables #1311</span>
-          </a>
+          </a> -->
         </div>
 
           <!-- 
@@ -65,13 +87,9 @@
           -->
         <div id="portfolio-header-text-container">
             <div class="header-text">
-              <span class="main-title">Hey, I'm @ndoherty_eth.</span>
-              <div class="body-text">I’m a freelance designer and developer who aims to help other creatives build out their portfolios, skillset, and businesses.</div>
+              <span class="main-title">EpiGPT</span>
+              <div class="body-text">Prompting LLMs for Epidemiology</div>
             </div>
-            <a class="button" id="my-work-link">
-              <span class="button-text">Check out my projects</span> 
-              <image src="./assets/icons/arrow-right.svg" class="right-arrow-icon"/>
-            </a>
         </div>
       </div>
 
@@ -83,10 +101,86 @@
         - Add paragraphs using the <div class="body-text"></div> elements in the "about-section-content"
       -->
       <div id="about-section">
-        <span class="subheader-text">My Background / About Me</span>
+        <span class="subheader-text">About EpiGPT</span>
         <div class="about-section-content">
-          <div class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tristique risus nec feugiat in fermentum. Sed id semper risus in hendrerit gravida. Placerat duis ultricies lacus sed. Id neque aliquam vestibulum morbi blandit cursus risus. Elit pellentesque habitant morbi tristique senectus et netus et. Elementum tempus egestas sed sed risus pretium quam. Nibh ipsum consequat nisl vel pretium lectus quam id leo. Vitae congue mauris rhoncus aenean vel elit.</div>
-          <div class="body-text">Vitae justo eget magna fermentum. Imperdiet nulla malesuada pellentesque elit eget gravida. Aliquet nec ullamcorper sit amet. Aliquet sagittis id consectetur purus. Ac tortor dignissim convallis aenean. Enim neque volutpat ac tincidunt vitae. Lobortis feugiat vivamus at augue. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Viverra orci sagittis eu volutpat. Massa tincidunt nunc pulvinar sapien et ligula. Donec enim diam vulputate ut.</div>
+          <div class="body-text">Our goal is to investigate the feasibility of prompting Large Language Models (LLMs) like ChatGPT to predict the
+          trajectory of an epidemic and generate useful information from the same. This means that instead of training the model,
+          we provide it with prompts related to the epidemic and then query it for future predictions. Moreover, we are keen to
+          understand how these models can be used for providing better natural language explanation to such time series data, such
+          that they maybe easily understood by health experts and policy makers. We also look at the model's capability in
+          simulating counterfactual scenarios, such as how the epidemic trajectory would change if a lockdown was to be declared.</div>
+          <!-- <div class="body-text">Vitae justo eget magna fermentum. Imperdiet nulla malesuada pellentesque elit eget gravida. Aliquet nec ullamcorper sit amet. Aliquet sagittis id consectetur purus. Ac tortor dignissim convallis aenean. Enim neque volutpat ac tincidunt vitae. Lobortis feugiat vivamus at augue. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Viverra orci sagittis eu volutpat. Massa tincidunt nunc pulvinar sapien et ligula. Donec enim diam vulputate ut.</div> -->
+        </div>
+      </div>
+      <div id="about-section">
+        <span class="subheader-text">Some results</span>
+        <div class="about-section-content">
+          <div class="body-text">
+            We present some MAE values here:
+            <table>
+              <tr>
+                <th>Dataset</th>
+                <th>EpiGPT</th>
+                <th>ARIMA</th>
+              </tr>
+              <tr>
+                <td>CDC-Flu</td>
+                <td>9.23</td>
+                <td>7.96</td>
+              </tr>
+              <tr>
+                <td>CDC-Covid</td>
+                <td>19.76</td>
+                <td>25.89</td>
+              </tr>
+              <tr>
+                <td>Symptoms</td>
+                <td>0.49</td>
+                <td>0.32</td>
+              </tr>
+              <tr>
+                <td>Monash Covid</td>
+                <td>1.61</td>
+                <td>1.09</td>
+              </tr>
+              <tr>
+                <td>Monash Hospitalization</td>
+                <td>8.46</td>
+                <td>6.73</td>
+              </tr>
+            </table>
+            <br>
+            Thus EpiGPT gives at par or better results compared to ARIMA, even though there is no training involved and it is zero-shot.
+
+
+          </div>
+          <!-- <div class="body-text">Vitae justo eget magna fermentum. Imperdiet nulla malesuada pellentesque elit eget gravida. Aliquet nec ullamcorper sit amet. Aliquet sagittis id consectetur purus. Ac tortor dignissim convallis aenean. Enim neque volutpat ac tincidunt vitae. Lobortis feugiat vivamus at augue. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Viverra orci sagittis eu volutpat. Massa tincidunt nunc pulvinar sapien et ligula. Donec enim diam vulputate ut.</div> -->
+        </div>
+      </div>
+      <div id="about-section">
+        <span class="subheader-text">Links</span>
+        <div class="about-section-content">
+          <div class="body-text">
+            Link to slides: <a href="https://docs.google.com/presentation/d/1G3E8lQxPcbwvQ8XE2Pau4jfuWu3O2Dc4i4WiV1TmyeQ/edit?usp=sharing">Google Slides Link</a>
+          </div>
+          <!-- <div class="body-text">Vitae justo eget magna fermentum. Imperdiet nulla malesuada pellentesque elit eget gravida. Aliquet nec ullamcorper sit amet. Aliquet sagittis id consectetur purus. Ac tortor dignissim convallis aenean. Enim neque volutpat ac tincidunt vitae. Lobortis feugiat vivamus at augue. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Viverra orci sagittis eu volutpat. Massa tincidunt nunc pulvinar sapien et ligula. Donec enim diam vulputate ut.</div> -->
+        </div>
+      </div>
+      <div id="about-section">
+        <span class="subheader-text">About Us</span>
+        <div class="about-section-content">
+          <div class="body-text">This project has been developed by two PhD students from Georgia Tech College of Computing.
+
+            <figure>
+              <img src='assets/images/image-sayan.jpg' alt='missing' width="200"/>
+              <figcaption>Sayan Sinha</figcaption>
+            </figure>
+            <figure>
+              <img src='assets/images/image-haoxin.png' alt='missing' width="200"/>
+              <figcaption>Haoxin Liu</figcaption>
+            </figure>
+          </div>
+          <!-- <div class="body-text">Vitae justo eget magna fermentum. Imperdiet nulla malesuada pellentesque elit eget gravida. Aliquet nec ullamcorper sit amet. Aliquet sagittis id consectetur purus. Ac tortor dignissim convallis aenean. Enim neque volutpat ac tincidunt vitae. Lobortis feugiat vivamus at augue. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Viverra orci sagittis eu volutpat. Massa tincidunt nunc pulvinar sapien et ligula. Donec enim diam vulputate ut.</div> -->
         </div>
       </div>
 
